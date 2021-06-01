@@ -5,7 +5,12 @@ service: backend
 frameworkVersion: '2'
 
 custom:
-  tableName: 'users-table-${self:provider.stage}'
+  tableName: 'items-table-${self:provider.stage}'
+  serverless-offline:
+    httpPort: 4002
+
+plugins:
+  - serverless-offline
 
 provider:
   name: aws
@@ -24,9 +29,9 @@ provider:
             - dynamodb:UpdateItem
             - dynamodb:DeleteItem
           Resource:
-            - Fn::GetAtt: [ UsersTable, Arn ]
+            - Fn::GetAtt: [ ItemsTable, Arn ]
   environment:
-    USERS_TABLE: ${self:custom.tableName}
+    ITEMS_TABLE: ${self:custom.tableName}
 
 functions:
   api:
@@ -41,14 +46,14 @@ functions:
 
 resources:
   Resources:
-    UsersTable:
+    ItemsTable:
       Type: AWS::DynamoDB::Table
       Properties:
         AttributeDefinitions:
-          - AttributeName: userId
+          - AttributeName: itemId
             AttributeType: S
         KeySchema:
-          - AttributeName: userId
+          - AttributeName: itemId
             KeyType: HASH
         ProvisionedThroughput:
           ReadCapacityUnits: 1
